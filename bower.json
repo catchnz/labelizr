@@ -1,6 +1,6 @@
 {
   "name": "labelizr",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "repo": "azt3k/labelizr",
   "homepage": "https://github.com/azt3k/placelabel",
   "description": "CSS friendly jQuery implementation of the float label pattern",

@@ -2,8 +2,7 @@
  * Made awesome by AzT3k.
  */
 
-;
-(function($, window, document, undefined) {
+;(function($, window, document, undefined) {
 
     var pluginName = "labelizr",
         cssCache = {},

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+OUTPUT=$(uglifyjs labelizr.js -m -r '$,require,exports')
+echo ";$OUTPUT" > labelizr.min.js

@@ -6,7 +6,8 @@ then
 exit 1
 fi
 
-uglifyjs labelizr.js
+./build
+
 git add -A
 git commit -am "commit for release $1"
 git tag -a $1 -m "$1"
