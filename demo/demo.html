@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<!--[if !IE]><!-->
+<html>
+<!--<![endif]-->
+<!--[if IE 6 ]><html class="ie ie6"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8"><![endif]-->
+
+    <head>
+        <title>Labelizr Demo</title>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <style type="text/css">
+          .container {
+            width:990px;
+            margin:auto;
+          }
+        </style>
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="../labelizr.js"></script>
+        <script type="text/javascript" language="javascript">
+            $(function() { $('input, select, textarea').labelizr(); });
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Plain Old Form</h2>
+            <form>
+                <input type="text" placeholder="I am an input"><br>
+                <select data-label="I am a select">
+                    <option value="">I am a select</option>
+                    <option value="1">Value 1</option>
+                    <option value="2">Value 2</option>
+                </select><br>
+                <textarea placeholder="I am a textarea"></textarea><br>
+                <label><input type="checkbox"> Check me out</label><br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+    </body>
+
+</html>
