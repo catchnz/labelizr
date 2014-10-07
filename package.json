@@ -1,0 +1,28 @@
+{
+  "name": "labelizr",
+  "version": "0.1.0",
+  "description": "CSS friendly jQuery implementation of the float label pattern",
+  "main": "labelizr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/azt3k/labelizr.git"
+  },
+  "devDependencies": {
+    "uglify-js": "2.4.15"
+  },
+  "keywords": [
+    "label",
+    "placeholder",
+    "labelizr",
+    "float",
+    "floatlabel"
+  ],
+  "author": "Aaron Latham-Ilari",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azt3k/labelizr/issues"
+  }
+}

@@ -7,6 +7,8 @@ The basic logic was inspired by https://github.com/clubdesign/floatlabels.js but
 
 ## Usage
 
+*HTML*
+
 ````html
 <form>
     <input type="text" placeholder="I am an input"><br>
@@ -20,6 +22,8 @@ The basic logic was inspired by https://github.com/clubdesign/floatlabels.js but
     <input type="submit" value="Submit">
 </form>
 ````
+
+*JavaScript*
 
 ````javascript
 $('input, select, textarea').labelizr();
