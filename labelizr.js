@@ -4,12 +4,18 @@
 
 ;(function($, window, document, undefined) {
 
+    "use strict"
+
     var pluginName = "labelizr",
+        pluginVersion = "0.1.3",
+        resizeTimeoutHandles = {},
         cssCache = {},
+        styleAttrCache = {},
         defaults = {
             transitionDuration: 0.1,
             transitionEasing: 'ease-in-out',
             labelClass: '',
+            classSwitchOnly: false,
             alwaysDisplay: [], // select, textarea, input
             typeMatches: /text|password|email|number|search|url|tel/,
             css: {
@@ -49,7 +55,8 @@
         init: function() {
 
             // Set Vars
-            var self = this,
+            var $label,
+                self = this,
                 settings = this.settings,
                 transDuration = settings.transitionDuration,
                 transEasing = settings.transitionEasing,
@@ -57,7 +64,7 @@
                 elementID = $elem.attr('id'),
                 placeholderText = $elem.attr('placeholder'),
                 floatingText = $elem.attr('data-label'),
-                extraClasses = $elem.attr('data-class')
+                extraClasses = $elem.attr('data-class'),
                 animationCss = {
                     '-webkit-transition': 'all ' + transDuration + 's ' + transEasing,
                     '-moz-transition': 'all ' + transDuration + 's ' + transEasing,
@@ -98,11 +105,10 @@
             // deal to the markup
             $elem.wrap('<div class="floatlabel-wrapper" style="position:relative"></div>');
             $elem.before('<label for="' + elementID + '" class="label-floatlabel ' + settings.labelClass + ' ' + extraClasses + '">' + floatingText + '</label>');
-            this.$label = $elem.parent().find('label');
+            $label = this.$label = $elem.parent().find('label').css({'display':'none'});
 
-            // Compile and apply the base css
-            this.$label.css(this.cssConf('label'));
-            this.$element.css(this.cssConf('field'));
+            // save the original state of the elements
+            styleAttrCache[elementID] = $elem.attr('style') == undefined ? '' : $elem.attr('style');
 
             // Check value on event
             $elem.on('keyup blur change', function(e) {
@@ -111,23 +117,89 @@
 
             // Blur Callback
             $elem.on('blur', function() {
+
                 var state = $elem.is('.active-floatlabel') ? '-active' : '';
-                $elem.css(self.cssConf('field' + state)).removeClass('focus-floatlabel');
-                $elem.parent().find('label').css(self.cssConf('label' + state)).removeClass('focus-floatlabel');
+
+                $elem.removeClass('focus-floatlabel');
+                $label.removeClass('focus-floatlabel');
+
+                if (!settings.classSwitchOnly) {
+                    $elem.css(self.cssConf('field' + state));
+                    $label.css(self.cssConf('label' + state));
+                }
+
             });
 
             // Focus Callback
             $elem.on('focus', function() {
+
                 var state = $elem.is('.active-floatlabel') ? '-active' : '';
-                $elem.css(self.cssConf('field-focus', 'field' + state)).addClass('focus-floatlabel');
-                $elem.parent().find('label').css(self.cssConf('label-focus', 'label' + state)).addClass('focus-floatlabel');
+
+                $elem.addClass('focus-floatlabel');
+                $label.addClass('focus-floatlabel');
+
+                if (!settings.classSwitchOnly) {
+                    $elem.css(self.cssConf('field-focus', 'field' + state));
+                    $label.css(self.cssConf('label-focus', 'label' + state));
+                }
+
             });
 
-            // set transitions
-            self.$label.css(animationCss);
-            self.$element.css(animationCss);
+            // resize callback
+            // might be best to namespace this per element to prevent multiple callbacks
+            $(window).on('resize', function(e) {
 
-            this.checkValue();
+                // do some initial cleanup
+                $label
+                    .removeClass('active-floatlabel')
+                    .removeClass('focus-floatlabel');
+
+                $elem
+                    .trigger('blur')
+                    .data('flout', '0')
+                    .removeClass('active-floatlabel')
+                    .removeClass('focus-floatlabel');
+
+                // flush the css cache and reset the styles
+                self.resetInlineStyles(elementID);
+                self.flushCssCache(elementID);
+
+                // reset the label to the initial state
+                $label.css({'display':'none'});
+
+                // clear existing timeouts
+                if (resizeTimeoutHandles[elementID] != undefined)
+                    clearTimeout(resizeTimeoutHandles[elementID]);
+
+                // set a timeout on reinitalising things
+                resizeTimeoutHandles[elementID] = setTimeout(function() {
+
+                    // lets just make sure it's set to undefined
+                    resizeTimeoutHandles[elementID] = undefined;
+
+                    // apply styles if required
+                    if (!settings.classSwitchOnly) {
+                        $label.css(animationCss).css(self.cssConf('label'));
+                        $elem .css(animationCss).css(self.cssConf('field'));
+                    }
+
+                    // recheck the value
+                    self.checkValue();
+
+                }, 300);
+
+            }).trigger('resize');
+
+        },
+
+        flushCssCache: function(id) {
+            if (id == undefined) cssCache = {};
+            else cssCache[id] = undefined;
+        },
+
+        resetInlineStyles: function(id) {
+            $('#' + id).attr('style', styleAttrCache[id]);
+            $('label[for="' + id + '"]').attr('style','');
         },
 
         cssConf: function(type, base) {
@@ -146,7 +218,7 @@
                 // Initial State Field CSS
                 cssCache[id]['field'] = $.extend({}, {
                     'padding-top': $elem.css('padding-top'),
-                    'height': $elem.outerHeight(),
+                    'height': $elem.outerHeight()
                 }, this.settings.css['field']);
 
                 // Initial State Label CSS
@@ -188,6 +260,7 @@
                 : $.extend({}, cssCache[id][base], cssCache[id][type]);
 
         },
+
         checkValue: function(e) {
 
             if (e) {
@@ -221,30 +294,46 @@
             ) this.hideLabel();
 
         },
+
         showLabel: function() {
 
             var self = this, labelCss, fieldCss;
 
-            if (self.$element.is('.focus-floatlabel')) {
-                labelCss = self.cssConf('label-focus', 'label-active');
-                fieldCss = self.cssConf('field-focus', 'field-active');
-            } else {
-                labelCss = self.cssConf('label-active');
-                fieldCss = self.cssConf('field-active');
+            self.$label.css({'display': 'block'});
+
+            if (!self.settings.classSwitchOnly) {
+
+                if (self.$element.is('.focus-floatlabel')) {
+                    labelCss = self.cssConf('label-focus', 'label-active');
+                    fieldCss = self.cssConf('field-focus', 'field-active');
+                } else {
+                    labelCss = self.cssConf('label-active');
+                    fieldCss = self.cssConf('field-active');
+                }
+
+                self.$label.css(labelCss);
+                self.$element.css(fieldCss);
             }
 
-            self.$label.css({'display': 'block'});
-            self.$label.css(labelCss).addClass('active-floatlabel');
-            self.$element.css(fieldCss).addClass('active-floatlabel');
+            self.$label.addClass('active-floatlabel');
+            self.$element.addClass('active-floatlabel');
 
         },
+
         hideLabel: function() {
 
             var self = this;
 
-            self.$label.css(self.cssConf('label')).removeClass('active-floatlabel');
-            self.$element.css(self.cssConf('field')).removeClass('active-floatlabel');
+            if (!self.settings.classSwitchOnly) {
+                self.$label.css(self.cssConf('label'));
+                self.$element.css(self.cssConf('field'));
+            }
 
+            self.$label.removeClass('active-floatlabel');
+            self.$element.removeClass('active-floatlabel');
+
+            // consider changing this to:
+            // self.$label.one('transitionend.move webkitTransitionEnd.move oTransitionEnd.move otransitionend.move MSTransitionEnd.move', function(e) {});
             window.setTimeout(function() {
                 self.$label.css({'display': 'none'});
             }, self.settings.transitionDuration * 1000);
@@ -261,3 +350,4 @@
     };
 
 })(jQuery, window, document);
+

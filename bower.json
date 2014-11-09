@@ -1,14 +1,15 @@
 {
   "name": "labelizr",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repo": "azt3k/labelizr",
-  "homepage": "https://github.com/azt3k/placelabel",
+  "homepage": "https://github.com/azt3k/labelizr",
   "description": "CSS friendly jQuery implementation of the float label pattern",
   "keywords": ["floatlabel", "float", "label", "labelizr", "placeholder"],
   "license": "MIT",
   "dependencies": {
      "jquery": "~1.11.1"
   },
+  "main": "labelizr.js",
   "development": {},
   "ignore": []
 }

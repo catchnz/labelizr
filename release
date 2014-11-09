@@ -3,7 +3,7 @@
 if (( "$#" != 1 ))
 then
     echo "Usage: ./release {version}"
-exit 1
+	exit 1
 fi
 
 ./build
@@ -11,4 +11,5 @@ fi
 git add -A
 git commit -am "commit for release $1"
 git tag -a $1 -m "$1"
+git push
 git push origin $1

@@ -1,7 +1,7 @@
 Labelizr
 ========
 
-Follows the famous Float Label Pattern. Built on jQuery.
+CSS friendly jQuery implementation of the float label pattern.
 
 The basic logic was inspired by https://github.com/clubdesign/floatlabels.js but this implementation takes a different approach.
 
@@ -36,6 +36,7 @@ $('input, select, textarea').labelizr();
     transitionDuration: 0.1,
     transitionEasing: 'ease-in-out',
     labelClass: '',
+    classSwitchOnly: false,
     alwaysDisplay: [], // select, textarea, input
     typeMatches: /text|password|email|number|search|url|tel/,
     css: {
