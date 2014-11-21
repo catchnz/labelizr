@@ -7,7 +7,7 @@
     "use strict"
 
     var pluginName = "labelizr",
-        pluginVersion = "0.1.3",
+        pluginVersion = "0.1.4",
         resizeTimeoutHandles = {},
         cssCache = {},
         styleAttrCache = {},
@@ -147,7 +147,8 @@
 
             // resize callback
             // might be best to namespace this per element to prevent multiple callbacks
-            $(window).on('resize', function(e) {
+            var ev = this.isAndroid() ? 'orientationchange' : 'resize';
+            $(window).on(ev, function(e) {
 
                 // do some initial cleanup
                 $label
@@ -190,6 +191,10 @@
 
             }).trigger('resize');
 
+        },
+
+        isAndroid: function() {
+            return /Android/.test(navigator.userAgent);
         },
 
         flushCssCache: function(id) {
