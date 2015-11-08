@@ -166,7 +166,7 @@
 
                 // resize callback
                 // might be best to namespace this per element to prevent multiple callbacks
-                var ev = this.isAndroid() ? 'orientationchange.labelizr' : 'resize.labelizr';
+                var ev = this.hasOrientationChange() ? 'orientationchange.labelizr' : 'resize.labelizr';
                 $(window)
                     .off(ev)
                     .on(ev, function(e) {
@@ -222,6 +222,10 @@
 
             isAndroid: function() {
                 return /Android/.test(navigator.userAgent);
+            },
+
+            hasOrientationChange: function() {
+                return 'onorientationchange' in window;
             },
 
             flushCssCache: function(id) {
