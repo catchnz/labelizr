@@ -18,7 +18,7 @@
    $(function() {
 
         var pluginName = "labelizr",
-            pluginVersion = "0.2.0",
+            pluginVersion = "0.2.3",
             resizeTimeoutHandles = {},
             cssCache = {},
             styleAttrCache = {},
