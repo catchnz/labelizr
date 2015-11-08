@@ -122,85 +122,101 @@
                 styleAttrCache[elementID] = $elem.attr('style') == undefined ? '' : $elem.attr('style');
 
                 // Check value on event
-                $elem.on('keyup blur change', function(e) {
-                    self.checkValue(e);
-                });
+                $elem
+                    .off('keyup.labelizr')
+                    .off('blur.labelizr')
+                    .off('change.labelizr')
+                    .on('keyup.labelizr blur.labelizr change.labelizr', function(e) {
+                        self.checkValue(e);
+                    });
 
                 // Blur Callback
-                $elem.on('blur', function() {
+                $elem
+                    .off('blur.labelizr')
+                    .on('blur.labelizr', function() {
 
-                    var state = $elem.is('.active-floatlabel') ? '-active' : '';
+                        var state = $elem.is('.active-floatlabel') ? '-active' : '';
 
-                    $elem.removeClass('focus-floatlabel');
-                    $label.removeClass('focus-floatlabel');
+                        $elem.removeClass('focus-floatlabel');
+                        $label.removeClass('focus-floatlabel');
 
-                    if (!settings.classSwitchOnly) {
-                        $elem.css(self.cssConf('field' + state));
-                        $label.css(self.cssConf('label' + state));
-                    }
+                        if (!settings.classSwitchOnly) {
+                            $elem.css(self.cssConf('field' + state));
+                            $label.css(self.cssConf('label' + state));
+                        }
 
-                });
+                    });
 
                 // Focus Callback
-                $elem.on('focus', function() {
+                $elem
+                    .off('focus.labelizr')
+                    .on('focus.labelizr', function() {
 
-                    var state = $elem.is('.active-floatlabel') ? '-active' : '';
+                        var state = $elem.is('.active-floatlabel') ? '-active' : '';
 
-                    $elem.addClass('focus-floatlabel');
-                    $label.addClass('focus-floatlabel');
+                        $elem.addClass('focus-floatlabel');
+                        $label.addClass('focus-floatlabel');
 
-                    if (!settings.classSwitchOnly) {
-                        $elem.css(self.cssConf('field-focus', 'field' + state));
-                        $label.css(self.cssConf('label-focus', 'label' + state));
-                    }
+                        if (!settings.classSwitchOnly) {
+                            $elem.css(self.cssConf('field-focus', 'field' + state));
+                            $label.css(self.cssConf('label-focus', 'label' + state));
+                        }
 
-                });
+                    });
 
                 // resize callback
                 // might be best to namespace this per element to prevent multiple callbacks
-                var ev = this.isAndroid() ? 'orientationchange' : 'resize';
-                $(window).on(ev, function(e) {
+                var ev = this.isAndroid() ? 'orientationchange.labelizr' : 'resize.labelizr';
+                $(window)
+                    .off(ev)
+                    .on(ev, function(e) {
 
-                    // do some initial cleanup
-                    $label
-                        .removeClass('active-floatlabel')
-                        .removeClass('focus-floatlabel');
+                        // find the currently focused element
+                        var $cur = $(':focus');
 
-                    $elem
-                        .trigger('blur')
-                        .data('flout', '0')
-                        .removeClass('active-floatlabel')
-                        .removeClass('focus-floatlabel');
+                        // do some initial cleanup
+                        $label
+                            .removeClass('active-floatlabel')
+                            .removeClass('focus-floatlabel');
 
-                    // flush the css cache and reset the styles
-                    self.resetInlineStyles(elementID);
-                    self.flushCssCache(elementID);
+                        $elem
+                            .trigger('blur')
+                            .data('flout', '0')
+                            .removeClass('active-floatlabel')
+                            .removeClass('focus-floatlabel');
 
-                    // reset the label to the initial state
-                    $label.css({'display':'none'});
+                        // flush the css cache and reset the styles
+                        self.resetInlineStyles(elementID);
+                        self.flushCssCache(elementID);
 
-                    // clear existing timeouts
-                    if (resizeTimeoutHandles[elementID] != undefined)
-                        clearTimeout(resizeTimeoutHandles[elementID]);
+                        // reset the label to the initial state
+                        $label.css({'display':'none'});
 
-                    // set a timeout on reinitalising things
-                    resizeTimeoutHandles[elementID] = setTimeout(function() {
+                        // clear existing timeouts
+                        if (resizeTimeoutHandles[elementID] != undefined)
+                            clearTimeout(resizeTimeoutHandles[elementID]);
 
-                        // lets just make sure it's set to undefined
-                        resizeTimeoutHandles[elementID] = undefined;
+                        // set a timeout on reinitalising things
+                        resizeTimeoutHandles[elementID] = setTimeout(function() {
 
-                        // apply styles if required
-                        if (!settings.classSwitchOnly) {
-                            $label.css(animationCss).css(self.cssConf('label'));
-                            $elem .css(animationCss).css(self.cssConf('field'));
-                        }
+                            // lets just make sure it's set to undefined
+                            resizeTimeoutHandles[elementID] = undefined;
 
-                        // recheck the value
-                        self.checkValue();
+                            // apply styles if required
+                            if (!settings.classSwitchOnly) {
+                                $label.css(animationCss).css(self.cssConf('label'));
+                                $elem .css(animationCss).css(self.cssConf('field'));
+                            }
 
-                    }, 300);
+                            // recheck the value
+                            self.checkValue();
 
-                }).trigger('resize');
+                            // refocus
+                            $cur.trigger('focus');
+
+                        }, 300);
+
+                    }).trigger('resize');
 
             },
 
