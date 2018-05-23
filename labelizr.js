@@ -174,6 +174,7 @@
                         // find the currently focused element
                         var $cur = $(':focus');
 
+
                         // do some initial cleanup
                         $label
                             .removeClass('active-floatlabel')
@@ -211,8 +212,11 @@
                             // recheck the value
                             self.checkValue();
 
-                            // refocus
-                            $cur.trigger('focus');
+                            //look not attr that stops focus data-fl-no-focus
+                            if (!$cur.data("fl-no-focus")) {
+                                // refocus only 
+                                $cur.trigger('focus');
+                            }
 
                         }, 300);
 
