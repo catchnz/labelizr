@@ -174,7 +174,6 @@
                         // find the currently focused element
                         var $cur = $(':focus');
 
-
                         // do some initial cleanup
                         $label
                             .removeClass('active-floatlabel')
