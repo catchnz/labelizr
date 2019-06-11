@@ -213,13 +213,13 @@
 
                             //look not attr that stops focus data-fl-no-focus
                             if (!$cur.data("fl-no-focus")) {
-                                // refocus only 
+                                // refocus only
                                 $cur.trigger('focus');
                             }
 
                         }, 300);
 
-                    }).trigger('resize');
+                    }).trigger(ev);
 
             },
 
