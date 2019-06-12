@@ -1,6 +1,6 @@
 {
   "name": "labelizr",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "CSS friendly jQuery implementation of the float label pattern",
   "main": "labelizr.js",
   "scripts": {
